@@ -1,20 +1,31 @@
 <template>
   <div class="content">
         <div class="text item">
-                <el-table :data="rows" size="mini" >
+              <el-table :data="rows" size="mini" >
                   <el-table-column v-for="(item,key) in field" :prop="item.prop"  :label="item.label" :width="item.width" :key="key">
                     <template slot-scope="scope">
                         <div v-if="!editstatus[scope.$index + item.prop]" @dblclick="edit(scope)">
-                            <i class="el-icon-edit"></i>{{formatter(scope.row[item.prop], scope)}}
+                            <i class="el-icon-edit"></i>{{formatter(rows[scope.$index][item.prop], scope)}}
                         </div>
                         <div v-else>
-                          <el-input v-if="item.type === 'text'" :ref="'field' + scope.$index + item.prop" @blur="edit(scope)" v-model="scope.row[item.prop]" size="mini"></el-input>
-                          <el-select v-else-if="item.type === 'select'" item.property v-model="scope.row[item.prop]" @change="edit(scope)" size="mini" placeholder="选择打开类型">
+                          {{scope.rows}}
+                          <el-input v-if="item.type === 'text'" :ref="'field' + scope.$index + item.prop" @blur="edit(scope)" v-model="rows[scope.$index][item.prop]" size="mini"></el-input>
+                          <el-select v-else-if="item.type === 'select'" v-model="rows[scope.$index][item.prop]" @change="edit(scope)" size="mini" placeholder="选择打开类型">
                             <el-option
                               v-for="item in item.options"
                               :key="item.value"
                               :label="item.label"
-                              :value="item.value">
+                              :value="item.value"
+                              :disabled="item.disabled">
+                            </el-option>
+                          </el-select>
+                          <el-select v-else-if="item.type === 'multiple'"  multiple v-model="rows[scope.$index][item.prop]" @visible-change="editchange(scope,$event)" size="mini" placeholder="选择打开类型">
+                            <el-option
+                              v-for="item in item.options"
+                              :key="item.value"
+                              :label="item.label"
+                              :value="item.value"
+                              :disabled="item.disabled">
                             </el-option>
                           </el-select>
                         </div>
@@ -34,49 +45,56 @@
 </template>
 
 <script>
+import util from '@/util/util'
 export default {
   name: 'EditTableForm',
   props:{
-    rows:{
-        type: Array,
-        default: function(){
-          return []
-        }
-    },
     field: {
-       type: Array,
-        default: function(){
-          return []
-        } 
+        type: Array,
+          default: function(){
+            return []
+        },
+    },
+    rows: {
+        type: Array,
+          default: function(){
+            return []
+        },
     }
   },
   data () {
     return {
         editstatus:{},
-        addTemp:{}
+        addTemp:{},
     }
   },
   async created(){
-     this.field.forEach( item => {
-          this.$set(this.addTemp, item.prop,"")
+     this.field.forEach( (item,key) => {
+        this.$set(this.addTemp, item.prop, '')
      })
   },
-  mounted() {
-    
-  },
   methods: {
-      edit(rows){
-        let { $index, column } = rows
+      edit(scope){
+        let { $index, column } = scope
         this.$set(this.editstatus, $index + column.property, !this.editstatus[$index + column.property])
-        this.$nextTick( () =>{
+        this.$nextTick( () => {
             if(this.$refs['field' + $index + column.property] && this.$refs['field' + $index + column.property].length > 0){
               this.$refs['field' + $index + column.property][0].$refs.input.focus()
-            } 
+            }
         })
       },
 
+      editchange(scope, event){
+        if(!event){
+          let { $index, column } = scope
+          this.$set(this.editstatus, $index + column.property, !this.editstatus[$index + column.property])
+        }
+        
+      },
+
       addBotton(){
-         this.rows.push(this.addTemp)
+        let tmp = util.deepCopy(this.addTemp);
+        this.rows.push(tmp)
       },
       
       deleteRow(index){
@@ -92,10 +110,14 @@ export default {
         if(row && row.type === "select"){
             if(row.options){
                 let tmp = row.options.find( item => item.value === value );
-                return tmp && tmp.label
+                return (tmp && tmp.label) || "双击编辑"
             }else{
-              return ''
+              return value || '双击编辑'
             }
+        }else if(row && row.type === "multiple"){
+          return value && value.join(",") || '双击编辑'
+        }else{
+           return value || '双击编辑'
         }
       }
   }

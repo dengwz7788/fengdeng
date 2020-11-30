@@ -8,7 +8,7 @@
         </el-breadcrumb>
       </div>
       <div class="search">
-        <FdSearch></FdSearch>
+        <fd-search></fd-search>
       </div>
       <div class="tools">
           <div class="right">

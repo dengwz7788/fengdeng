@@ -41,6 +41,11 @@
                 <fd-switch @change="changeBoolean(scope.row, $event, 'isshow')" :status="scope.row.isshow"></fd-switch>
               </template>
           </el-table-column>
+          <el-table-column prop="issearch" label="是否搜索" header-align="center" align="center" width="80">
+            <template slot-scope="scope">
+                <fd-switch @change="changeBoolean(scope.row, $event, 'issearch')" :status="scope.row.issearch"></fd-switch>
+              </template>
+          </el-table-column>
           <el-table-column prop="isrequire" label="是否必填" header-align="center" align="center" width="80">
             <template slot-scope="scope">
               <fd-switch  @change="changeBoolean(scope.row, $event, 'isrequire')" :status="scope.row.isrequire"></fd-switch>
@@ -58,10 +63,9 @@
           </el-table-column>
         </el-table>
      </div>
-     <!-- <div class="footer">
+     <div class="footer">
         <el-button  size="small" @click="add">新增字段</el-button>
-        <el-button type="primary" size="small" @click="sumbit">提交配置</el-button>
-     </div> -->
+     </div>
   </div>
 </template>
 
@@ -71,7 +75,15 @@ import { Switch, Select }  from '@/components/UI/'
 import Expand  from '@/components/Common/Expand.vue'
 import util from '@/util/util'
 export default {
-  name: 'HelloWorld',
+  name: 'TableEdite',
+  props:{
+    field: {
+       type: Array,
+        default: function(){
+          return []
+        } 
+    }
+  },
   components: {
     FdSwitch: Switch,
     FdSelect: Select,
@@ -79,7 +91,6 @@ export default {
   },
   data () {
     return {
-      field: [],
       key: 0,
       options: [{
         value: 'text',
@@ -115,13 +126,6 @@ export default {
     }
   },
   async created(){
-
-    let { result } = await this.$httpExt.get('http://localhost:3000/dataDictType',{}, {
-      	withCredentials:true
-    });
-
-    this.field = result
-
    // this.getFieldByUrl()
   },
   mounted() {
@@ -152,7 +156,6 @@ export default {
             }
           }
       }
-      
     },
 
     //行拖拽
@@ -193,15 +196,6 @@ export default {
           if(columnIndex === 0){
               return "cursor: move"
           }
-    },
-
-    sumbit(){
-      let vm = this
-      vm.$httpExt.post('http://localhost:3000/',{
-         field: vm.field
-      },{
-      	withCredentials:true
-      });
     }
   }
 }

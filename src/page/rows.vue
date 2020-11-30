@@ -1,11 +1,6 @@
 <template>
   <div class="content">
-      <el-card class="box-card" style="margin-bottom:10px;">
-        <div slot="header" class="clearfix">
-          <span>设置行操作设置</span>
-        </div>
         <fd-edit-table-form :field="field" :rows="rows" ></fd-edit-table-form>
-      </el-card>
   </div>
 </template>
 
@@ -43,41 +38,35 @@ export default {
             },{
               prop: 'condition',
               label: '条件',
-              type: 'select',
-              property: 'multiple',
+              type: 'multiple',
               option: []
             }],
         rows:[]
     }
   },
-  async created(){
-  },
-  mounted() {
+  inject: ['fieldArr'],
+  async mounted(){
     
+    setTimeout(() => {
+      let field = this.fieldArr() || []
+      this.condition = field.map( item => {
+          return {
+              label: item.name,
+              value: item.fieldname
+          }
+      })
+
+      this.field = this.field.map( item => {
+          if(item.prop === "condition"){
+              item.options = this.condition
+          }
+          return item
+      })
+
+    },0)
+   
   },
   methods: {
-      edit(rows){
-        let { $index, column } = rows
-        this.$set(this.editstatus, $index + column.property, !this.editstatus[$index + column.property])
-        this.$nextTick( () =>{
-            if(this.$refs['field' + $index + column.property] && this.$refs['field' + $index + column.property].length > 0){
-              this.$refs['field' + $index + column.property][0].$refs.input.focus()
-            } 
-        })
-      },
-
-      addBotton(){
-         this.rows.push({
-            text: '双击编辑',
-            type: 'url',
-            url: '',
-            condition: ''
-         })
-      },
-      
-      deleteRow(index){
-        this.rows.splice(index,1)
-      },
   }
 }
 </script>
@@ -94,6 +83,9 @@ export default {
 
     /deep/ .el-card__body{
       padding: 10px 20px;
+    }
+    /deep/ .el-table__empty-block{
+       min-height: 45px
     }
   }
 

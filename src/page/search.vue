@@ -13,48 +13,70 @@ export default {
   },
   data () {
     return {
-         field:[{
-              prop: 'text',
-              label: '名称',
-              width: '180',
-              type: 'select',
-              options: [{
-                label: '新增',
-                value: 'add'
-              },{
-                label: '下载',
-                value: 'down'
-              },{
-                label: '上传',
-                value: 'upload'
-              }],
+      field:[{
+          prop: 'text',
+          label: '名称',
+          width: '180',
+          type: 'select',
+          options: [{
+            label: '新增',
+            value: 'add'
+          },{
+            label: '下载',
+            value: 'down'
+          },{
+            label: '上传',
+            value: 'upload'
+          }],
+        },{
+          prop: 'type',
+          label: '类型',
+          width: '180',
+          type: 'select',
+          options: [{
+              label: '配置系统页面',
+              value: 'sys_page'
             },{
-              prop: 'type',
-              label: '类型',
-              width: '180',
-              type: 'select',
-              options: [{
-                  label: '配置系统页面',
-                  value: 'sys_page'
-                },{
-                  label: '打开指定URL',
-                  value: 'url'
-              }],
-            },{
-              prop: 'url',
-              label: 'URL',
-              width: '180',
-              type: 'text'
-            },{
-              prop: 'condition',
-              label: '条件',
-              type: 'select',
-              property: 'multiple',
-              option: []
-            }],
-        rows:[]
+              label: '打开指定URL',
+              value: 'url'
+          }],
+        },{
+          prop: 'url',
+          label: 'URL',
+          width: '180',
+          type: 'text'
+        },{
+          prop: 'condition',
+          label: '条件',
+          type: 'multiple',
+          option: []
+      }],
+      rows:[],
+      condition: []
     }
-  }
+  },
+  inject: ['fieldArr'],
+  async mounted(){
+    
+    setTimeout(() => {
+      let field = this.fieldArr() || []
+      this.condition = field.map( item => {
+          return {
+              label: item.name,
+              value: item.fieldname
+          }
+      })
+
+      this.field = this.field.map( item => {
+          if(item.prop === "condition"){
+              item.options = this.condition
+          }
+          return item
+      })
+
+    },0)
+   
+  },
 }
 </script>
 

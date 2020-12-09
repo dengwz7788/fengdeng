@@ -8,11 +8,11 @@
         </el-breadcrumb>
       </div>
       <div class="search">
-        <fd-search></fd-search>
+        <fd-search :search="search"></fd-search>
       </div>
       <div class="tools">
           <div class="right">
-            <el-button size="small" type="primary">查询</el-button>
+            <el-button size="small" type="primary" @click="searchFn">查询</el-button>
             <el-button size="small">重置</el-button>
           </div>
 
@@ -40,15 +40,21 @@
               show-overflow-tooltip
             >
             </el-table-column>
-            <el-table-column 
+            <el-table-column
               fixed="right"
               prop="op"  
-              width="100"
+              width="120"
               label="操作" 
               header-align="center" 
               align="center">
               <template slot-scope="scope">
-                  <el-button type="text" size="small" @click.native.prevent="deleteRow(scope.$index)">删除</el-button>
+                  <el-button v-for="(item, key) in rows"
+                    v-show="item.show"
+                    :key="key"
+                    type="text" 
+                    size="small"
+                    @click="optionFn(item.expand, scope)"
+                  >{{item.text}}</el-button>
               </template>
           </el-table-column>
         </el-table>
@@ -76,6 +82,7 @@ export default {
   },
   data () {
     return {
+      search: [],
       tableData: [],
       field: [],
       currentPage: 1,
@@ -91,15 +98,18 @@ export default {
 
     if(data.succ === "ok"){
       let fielStroageInfo = JSON.parse(localStorage.getItem("page")) || {}
-      this.field =  data.result && data.result.map( item => {
+      this.field =  data.result && data.result.field.map( item => {
+           if(item.issearch){
+              this.search.push(item)
+           }
            item.width = fielStroageInfo[item.fieldname]
            return item
       })
 
-       console.log('fielStroageInfo', this.field);
+      this.rows = data.result.rows || []
     }
 
-    this.fetchDataByUrl()
+   this.fetchDataByUrl()
   },
   mounted() {
   
@@ -114,12 +124,16 @@ export default {
           pageSize: vm.pageSize
       }
 
-      let data2 = await this.$httpExt.post('http://10.206.106.60:8080/backweb/dataDictType/list',_obj);
+      let data2 = await this.$httpExt.post('http://iscb-backweb-dev.sit.sf-express.com:8080/backweb/dataDictType/list',_obj);
       
       if(data2.succ === "ok"){
         this.tableData = data2.result
         this.total = data2.totalSize
       }
+    },
+
+    searchFn(){
+        
     },
 
     changeRowWidth(newWidth, oldWidth, column, event){
@@ -141,8 +155,20 @@ export default {
       this.fetchDataByUrl()
     },
 
-    deleteRow(){
-
+    optionFn(obj, scope){
+      if(obj.type == "code"){
+     
+        try{
+          let { row, $index } = scope
+          this.$originalrow = row
+          this.$index = $index
+          let tmp = eval("("+obj.value+")")
+          tmp.apply(this)()
+        }catch(e){
+          console.log("没有配置操作函数")
+        }
+         
+      }
     }
   }
 }

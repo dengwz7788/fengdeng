@@ -24,7 +24,8 @@
 			height="300"
 			width="100%"
 			style="border:1px solid #ccc"
-			:code="code"
+			:code="code2"
+			:key="key"
 			:options="options"
 			:highlighted="highlightLines"
 			:changeThrottle="500"
@@ -41,8 +42,8 @@
 		name: 'Tools',
 		data() {
             return {
-                code: '',
-                editor:null,
+				code2: '',
+				editor:null,
                 options: {
                     theme: "vs-dark",
                     selectOnLineNumbers: true,
@@ -77,27 +78,37 @@
 					}
 				],
             }
-        },
+		},
+		props:{
+			code: {
+				type: String,
+				default: ""
+			}
+		},
 		components: {
             MonacoEditor
         },
 		mounted(){		
+			this.code2 = this.code
+			console.log("code2", this.code2)
 		},
       	methods: {
 			onMounted (editor) {
 				this.editor = editor;
 
-				let code = localStorage.getItem("code")
-				this.editor.setValue(code)
+				// let code = localStorage.getItem("code")
+				// console.log(this.code2)
+				// this.editor.setValue(this.code2)
 
-				setInterval(() => {
-					console.log("自我保存了")
-					localStorage.setItem("code", this.code)
-				}, 300000);
+				// setInterval(() => {
+				// 	console.log("自我保存了")
+				// 	localStorage.setItem("code", this.code2)
+				// }, 3000);
             },
 
             onCodeChange(editor) {
-				this.code = editor.getValue()
+				this.code2 = editor.getValue()
+				this.$emit("inputcode", this.code2)
 			},
       	}
 	}

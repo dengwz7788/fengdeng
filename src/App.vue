@@ -1,17 +1,12 @@
 <template>
-  <div id="app">
-    <el-container>
-      <el-header height="40px">丰登可视化配置表单系统</el-header>
-      <el-main>
-        <el-row>
-          <el-col :span="19">
-            <router-view class="routerView" />
-          </el-col>
-          <el-col :span="5">
-              <tools></tools>
-          </el-col>
-        </el-row>
-      </el-main>
+  <div>
+    <el-container style="height:100%">
+      <el-header height="40px">
+          丰登可视化配置表单系统
+          <div class="userinfo">10401892 <span class="loginout">退出</span></div>     
+      </el-header>
+      
+      <router-view class="routerView" />
     </el-container>
   </div>
 </template>
@@ -22,6 +17,10 @@ import tools from '@/components/Common/tools'
 
 export default {
   name: 'App',
+  data(){
+    return {
+     }
+  },
   components: {
 			tools
 		}
@@ -29,7 +28,8 @@ export default {
 }
 </script>
 
-<style>
+<style lang="less">
+
 body{
   padding: 0;
   margin: 0;
@@ -44,11 +44,20 @@ body{
   color: #fff;
   text-align: left;
   line-height: 40px;
-}
-  
-  .el-main {
-    background-color: #f5f5f5;
-    color: #fff;
-    padding: 10px 0 10px 10px;
+  .userinfo{
+     float: right;
+     .loginout{
+         padding-left: 20px;
+     }
   }
+}
+
+.top{
+  padding: 10px;
+  height: 50px;
+  background: #fff;
+  color: #000;
+  font-size: 14px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04)
+}
 </style>

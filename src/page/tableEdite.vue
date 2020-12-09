@@ -7,15 +7,16 @@
           size="small"
           row-key="fieldname"
           :cell-style="cellStyle"
+          @expand-change="exChange"
           border>
           <el-table-column label="" width="50" header-align="center" align="center">
-            <template>
+            <template slot-scope="scope">
                   <i class="el-icon-rank"></i>
-              </template>
+            </template>
           </el-table-column>
           <el-table-column label="" width="50" type="expand" header-align="center">
               <template slot-scope="props">
-                  <FdExpand :expand="props.row.expand"></FdExpand>
+                  <fd-expand :expand="props.row.expand"></fd-expand>
               </template>
           </el-table-column>
           <el-table-column label="字段名" width="180" header-align="center">
@@ -84,6 +85,11 @@ export default {
         } 
     }
   },
+  provide () {
+			return {
+        checkrows: () => this.checkrows
+			}
+	},
   components: {
     FdSwitch: Switch,
     FdSelect: Select,
@@ -108,6 +114,7 @@ export default {
         value: 'radio',
         label: '单选框'
       }],
+      checkrows: [],
       fieldTpl: {
         fieldname: '',
         name: '双击修改',
@@ -121,6 +128,8 @@ export default {
         isedit: true,
         op: '',
         expand: {
+          type: "code",
+          value: ''
         }
       }
     }
@@ -134,6 +143,10 @@ export default {
   methods: {
     add(){
         this.field.push(this.fieldTpl)
+    },
+
+    exChange(row, rowList) {
+        this.checkrows = row
     },
 
     deleteRow(index){

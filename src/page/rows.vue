@@ -13,40 +13,53 @@ export default {
   },
   data () {
     return {
-        field:[{
+      field:[{
               prop: 'text',
               label: '名称',
               width: '180',
               type: 'text'
             },{
               prop: 'type',
-              label: '类型',
-              width: '180',
+              label: '按钮类型',
               type: 'select',
               options: [{
-                  label: '配置系统页面',
-                  value: 'sys_page'
+                  label: '主要',
+                  value: 'primary'
                 },{
-                  label: '打开指定URL',
-                  value: 'url'
+                  label: '成功',
+                  value: 'success'
+                },{
+                  label: '警告',
+                  value: 'warning'
+                },{
+                  label: '危险',
+                  value: 'danger'
+                },{
+                  label: '文本',
+                  value: 'text'
               }],
             },{
-              prop: 'url',
-              label: 'URL',
-              width: '180',
-              type: 'text'
-            },{
-              prop: 'condition',
-              label: '条件',
-              type: 'multiple',
-              option: []
-            }],
-        rows:[]
+              prop: 'show',
+              label: '是否显示',
+              type: 'switch'
+      }]
+    }
+  },
+  props:{
+    rows:{
+				type: Array,
+        default: function(){
+          return []
+        }
     }
   },
   inject: ['fieldArr'],
   async mounted(){
-    
+    // 自行字符串函数，暂时是可用性的
+    // let code = localStorage.getItem("code")
+    // eval("("+code+")();");
+    // console.log("this2", this)
+
     setTimeout(() => {
       let field = this.fieldArr() || []
       this.condition = field.map( item => {

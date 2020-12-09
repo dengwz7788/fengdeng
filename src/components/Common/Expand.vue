@@ -28,34 +28,44 @@
 	</el-tabs>
    -->
 
-   <MonacoEditor></MonacoEditor>
+   <fd-MonacoEditor v-if="type == 'code'" :code="value" @inputcode="inputcode"></fd-MonacoEditor>
 	
 </template>
 <script>
 	import MonacoEditor from './MonacoEditor'
+	import bus from '@/util/bus'
 	export default {
 		name: 'Expand',
 		components: {
-			MonacoEditor
+			FdMonacoEditor: MonacoEditor
 		},
-		props:{
-			expand: {
-				type: Object,
-				default: function(){
-					return {}
-				}
-			}
-		},
+		inject: ['checkrows'],
 		data(){
 			return {
-				ruleForm: {
-				}
+				rows: {},
+				type: '',
+				value: '',
 			}
 		},
-		created(){
-			this.ruleForm = this.expand
+		watch:{
+			rows(value, oldevlaue) {
+				console.log("value", value, oldevlaue);
+			}
+		},
+		mounted(){
+			this.rows = this.checkrows()
+			let { expand } = this.rows
+			this.type = expand.type
+			this.value = expand.value
+			
 		},
       	methods: {
+			inputcode(code){
+				this.value = code
+				this.rows.expand.value = code
+				bus.$emit('code', this.rows);
+				console.log("rows", this.rows)
+			}
       	}
 	}
 </script>

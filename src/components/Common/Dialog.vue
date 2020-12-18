@@ -1,7 +1,19 @@
 <template>
-    <el-dialog :title="title" :visible.sync="show" width="80%">
-        <fd-edit-table-form :key="keyNum" v-if="tableType === 'editTable'" :field="field" :rows="gridData" :expand="false" :move="false"></fd-edit-table-form>
-        <fd-table :key="keyNum" v-else :field="field" :rows="gridData"></fd-table>
+    <el-dialog :title="title" :visible.sync ="show" width="80%" @close="onClose">
+        <fd-edit-table-form 
+            :key="keyNum" 
+            v-if="tableType === 'editTable'" 
+            :field="field" 
+            :rows="gridData" 
+            :expand="false" 
+            :move="false">
+        </fd-edit-table-form>
+        <fd-table 
+            :key="keyNum" 
+            v-else 
+            :field="field" 
+            :rows="gridData">
+        </fd-table>
         <div class="footer" v-if="addBotton">
             <el-button type="primary" size="mini" @click="onSubmit">提交</el-button>
         </div>
@@ -54,13 +66,16 @@
 		},
 		data() {
 			return {
-       
 			}
-    	},
+        },
       	methods: {
 			onSubmit() {
                 this.$emit("onSubmit", this.gridData)
-      		}
+            },
+
+            onClose(){
+                this.$emit("onClose")
+            }
       	}
 	}
 </script>

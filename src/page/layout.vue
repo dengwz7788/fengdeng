@@ -75,6 +75,7 @@
             :tableType="tableType"
             :addBotton="addBotton"
             @onSubmit="onSubmit"
+            @onClose="onClose"
         ></fd-dialog>
     </div>
 </template>
@@ -167,6 +168,9 @@
     methods: {
         onSubmit(data){
             console.log("data", data)
+            this.dialogTableVisible = false
+        },
+        onClose(){
             this.dialogTableVisible = false
         },
         preview(){

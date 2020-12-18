@@ -24,7 +24,7 @@
 			height="300"
 			width="100%"
 			style="border:1px solid #ccc"
-			:code="code2"
+			:code="code"
 			:key="key"
 			:options="options"
 			:highlighted="highlightLines"
@@ -87,10 +87,6 @@
 		},
 		components: {
             MonacoEditor
-        },
-		mounted(){		
-			this.code2 = this.code
-			console.log("code2", this.code2)
 		},
       	methods: {
 			onMounted (editor) {
@@ -107,8 +103,7 @@
             },
 
             onCodeChange(editor) {
-				this.code2 = editor.getValue()
-				this.$emit("inputcode", this.code2)
+				this.$emit("inputcode",  editor.getValue())
 			},
       	}
 	}

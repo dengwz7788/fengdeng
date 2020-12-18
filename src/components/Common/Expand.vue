@@ -44,12 +44,7 @@
 			return {
 				rows: {},
 				type: '',
-				value: '',
-			}
-		},
-		watch:{
-			rows(value, oldevlaue) {
-				console.log("value", value, oldevlaue);
+				value: ''
 			}
 		},
 		mounted(){

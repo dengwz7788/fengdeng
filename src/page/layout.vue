@@ -7,17 +7,16 @@
           </div></el-col>
         <el-col :span="14"  :offset="1"> 
             <el-button-group>
-                <el-button  size="mini">全局变量</el-button>
-                <el-button  size="mini">全局脚本</el-button>
-                <el-button  size="mini">数据字典</el-button>
-                <el-button  size="mini" @click="showOption('api')" >接口管理</el-button>
-                <el-button  size="mini">版本管理</el-button>
+                <el-button  size="mini" @click="showGlobal">全局变量</el-button>
+                <el-button  size="mini" @click="showDic">数据字典</el-button>
+                <el-button  size="mini" @click="showOption" >接口管理</el-button>
+                <el-button  size="mini" @click="showVision">版本管理</el-button>
             </el-button-group>
           </el-col>
         <el-col :span="4">  
             <el-button-group>
-                <el-button  size="mini">全部保存</el-button>
-                <el-button  size="mini">项目预览</el-button>
+                <el-button  size="mini" @click="sumbit">全部保存</el-button>
+                <el-button  size="mini" @click="preview">项目预览</el-button>
             </el-button-group>
         </el-col>
       </el-row>
@@ -67,18 +66,30 @@
           </el-col> -->
         </el-row>
       </el-main>
+        <fd-dialog 
+            :keyNum="key"
+            :show="dialogTableVisible" 
+            :title="title" 
+            :gridData="gridData"
+            :field="gridField"
+            :tableType="tableType"
+            :addBotton="addBotton"
+            @onSubmit="onSubmit"
+        ></fd-dialog>
     </div>
 </template>
 <script>
   import tableEdite from './tableEdite.vue'
   import search from './search.vue'
   import rows from './rows.vue'
+  import dialog from '../components/Common/Dialog'
   export default {
     name: 'layout',
     components: {
         FdTableEdite: tableEdite,
         FdSearch:search,
-        FdRows:rows
+        FdRows:rows,
+        FdDialog:dialog
     },
     provide () {
         return {
@@ -100,6 +111,7 @@
               value:  ''
            },
            show: true,
+           id: 1
         },{
            text: '审核',
            type: 'warning',
@@ -108,6 +120,7 @@
               value: ""
            },
            show: true,
+           id: 2
         },{
            text: '删除',
            type: 'danger',
@@ -116,7 +129,15 @@
               value: 'function(){this.$message("这是一条消息提示");}'
             },
            show: true,
-        }]
+           id: 3
+        }],
+        dialogTableVisible: false,
+        title: '配置后端接口',
+        gridData:[],
+        gridField:[],
+        addBotton: true,
+        tableType: 'editTable',
+        key:0
       };
     },
     async created(){
@@ -130,8 +151,6 @@
         vm.field = field
         vm.rows = rows
 
-        document.oncontextmenu = new Function("return false");
-        document.oncontextmenu = function () { return false; };
         document.onkeydown = function (e) {
             var keyCode = e.keyCode || e.which || e.charCode;
             var ctrlKey = e.ctrlKey || e.metaKey;
@@ -146,8 +165,169 @@
 
     },
     methods: {
-        showOption(type){
-            console.log("type", type)
+        onSubmit(data){
+            console.log("data", data)
+            this.dialogTableVisible = false
+        },
+        preview(){
+            let routeUrl = this.$router.resolve({
+                path: "/page",
+                query: {id:96}
+            });
+            window.open(routeUrl.href, '_blank');
+        },
+        showVision(){
+            this.key++
+            this.title = '版本控制'
+            this.tableType = "table"
+            this.addBotton = false
+            this.gridField = [
+                {
+                    prop: 'vision',
+                    label: '版本号',
+                    width: '120',
+                    type: 'text'
+                },
+                {
+                    prop: 'env',
+                    label: '已发布环境',
+                    type: 'text'
+                },
+                {
+                    prop: 'publisher',
+                    label: '发布人',
+                    type: 'text',
+                    width: '100'
+                },
+                {
+                    prop: 'desc',
+                    label: '备注',
+                    type: 'text'
+                },
+                {
+                    prop: 'datetime',
+                    label: '发布时间',
+                    type: 'datetime',
+                    width: '180'
+                },{
+                prop: 'action',
+                label: '操作',
+                type: 'function',
+                children: [{
+                        functionName: '重新发布',
+                        callback: function(scope){
+                            this.ruleForm = scope.row
+                            this.key++ 
+                            this.show = true
+                        }
+                    }]
+                }
+            ]
+            this.gridData =[{
+                vision: '2020.1217.001',
+                env: ['测试环境','正式环境'],
+                publisher: '邓蔚之',
+                datetime: '2020-12-17 17:51:11',
+                desc: '新增菜单管理权限'
+            }]
+            this.dialogTableVisible = true
+        },
+        showOption(){
+            this.key++
+            this.title = '配置后端接口'
+            this.tableType = "editTable"
+            this.addBotton = true
+            this.gridData =[{
+                field: 'LIST_URL',
+                url: 'http://iscb-backweb-dev.sit.sf-express.com:8080/backweb/dataDictType/list'
+            },{
+                field: 'ADD_URL',
+                url: 'http://iscb-backweb-dev.sit.sf-express.com:8080/backweb/dataDictType/list'
+            },
+            {
+                field: 'UPDATE_URL',
+                url: 'http://iscb-backweb-dev.sit.sf-express.com:8080/backweb/dataDictType/list'
+            }]
+            this.gridField = [
+                {
+                    prop: 'field',
+                    label: '名称',
+                    width: '120',
+                    type: 'text'
+                },
+                {
+                    prop: 'url',
+                    label: '后台链接地址',
+                    type: 'text'
+                }
+            ]
+            this.dialogTableVisible = true
+        },
+        showGlobal(){
+            this.key++
+            this.title = '配置全局变量'
+            this.tableType = "editTable"
+            this.addBotton = true
+            this.gridData =[{
+                field: 'API',
+                value: 'http://iscb-backweb-dev.sit.sf-express.com:8080'
+            }]
+            this.gridField = [
+                {
+                    prop: 'field',
+                    label: '变量名',
+                    width: '120',
+                    type: 'text'
+                },
+                {
+                    prop: 'value',
+                    label: '变量值',
+                    type: 'text'
+                }
+            ]
+            this.dialogTableVisible = true
+        },
+        showDic(){
+            this.key++
+            this.title = '全局字典'
+            this.tableType = "table"
+            this.addBotton = false
+            this.gridField = [{
+                prop: 'id',
+                label: '字典编号',
+                width: '120',
+                type: 'text',
+            },{
+                prop: 'name',
+                label: '字典名称',
+                type: 'text',
+            },{
+                prop: 'type',
+                label: '字典类型',
+                width: '120',
+                type: 'text',
+            },{
+                prop: 'action',
+                label: '操作',
+                type: 'function',
+                children: [{
+                    functionName: '查看',
+                        callback: function(){
+                            this.$message('点击了删除按钮');
+                        }
+                    },{
+                    functionName: '删除',
+                        callback: function(scope){
+                              this.rows.splice(scope.$index,1)
+                        }
+                    }]
+            }]
+            this.gridData = [{
+                id: 1,
+                name: '（勿删）仓租计算周期',
+                type: '键值对'
+            }]
+            this.dialogTableVisible = true
         },
         handleChange(){
         },

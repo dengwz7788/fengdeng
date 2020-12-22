@@ -1,9 +1,6 @@
 <template>
   <div class="content">
         <div class="text item">
-              <div class="text item" style="padding: 10px 0;">
-                <el-button size="mini" type="primary" icon="el-icon-plus" @click="addBotton">发布</el-button>
-              </div>
               <el-table 
                 class="TableList"
                 :data="data" 
@@ -34,9 +31,12 @@
                     </template>
                   </el-table-column>
                 </el-table>
+              <div class="text item" style="padding: 10px 0;">
+                <el-button size="mini" type="primary" icon="el-icon-plus" @click="addBotton">发布</el-button>
+              </div>
         </div>
         <el-dialog title="新增发布" :visible.sync="show" width="40%" append-to-body>
-            <fd-form :key="key" :ruleForm="ruleForm" @onSubmit="onSubmit"></fd-form>
+            <fd-form :key="key" :formlayout="formlayout" :ruleForm="ruleForm" @onSubmit="onSubmit"></fd-form>
         </el-dialog>
   </div>
 </template>
@@ -71,6 +71,30 @@ export default {
           env: [],
           desc: ''
       },
+      formlayout:[{
+					type: 'checkbox',
+					name: 'env',
+					label: '环境',
+					placeholder: '请选择',
+					option:[{
+            label: '开发环境',
+            value: '开发环境'
+          },{
+            label: '测试环境',
+            value: '测试环境'
+          },{
+            label: '灰度环境',
+            value: '灰度环境'
+          },{
+            label: '正式环境',
+            value: '正式环境'
+          }]
+				},{
+					type: 'textarea',
+					name: 'desc',
+					label: '备注',
+					placeholder: '输入菜单名称',
+				}],
       key: 0,
       currentEnv:[]
     }

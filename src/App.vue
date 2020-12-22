@@ -13,8 +13,6 @@
 
 <script>
 
-import tools from '@/components/Common/tools'
-
 export default {
   name: 'App',
   data(){
@@ -22,8 +20,7 @@ export default {
      }
   },
   components: {
-			tools
-		}
+	}
 
 }
 </script>

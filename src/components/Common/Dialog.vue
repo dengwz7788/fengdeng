@@ -62,6 +62,10 @@
 				default: function(){
 					return []
 				}
+            },
+            fieldName:{
+                type: String,
+				default: ''
             }
 		},
 		data() {
@@ -70,7 +74,10 @@
         },
       	methods: {
 			onSubmit() {
-                this.$emit("onSubmit", this.gridData)
+                this.$emit("onSubmit", {
+                        "filename": this.fieldName,
+                        "data": this.gridData
+                })
             },
 
             onClose(){

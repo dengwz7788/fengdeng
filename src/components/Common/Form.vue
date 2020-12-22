@@ -1,24 +1,32 @@
 <template>
   <div class="content">
-      <el-form 
+      <el-form
         :model="ruleForm" 
         size="mini" 
         :rules="rules" 
         ref="ruleForm" 
         label-width="100px" 
         class="demo-ruleForm">
-      
-        <el-form-item label="环境" prop="env">
-          <el-checkbox-group v-model="ruleForm.env">
-            <el-checkbox label="开发环境" name="env"></el-checkbox>
-            <el-checkbox label="测试环境" name="env"></el-checkbox>
-            <el-checkbox label="灰度环境" name="env"></el-checkbox>
-            <el-checkbox label="正式环境" name="env"></el-checkbox>
-          </el-checkbox-group>
-        </el-form-item>
 
-        <el-form-item label="备注" prop="desc">
-          <el-input type="textarea" v-model="ruleForm.desc"></el-input>
+        <el-form-item v-for="(item,key) in formlayout" :key="key" :label="item.label" :prop="item.name">
+            <el-input v-if="item.type=== 'input'" v-model="ruleForm[item.name]" :placeholder="item.placeholder"></el-input>
+            <el-select v-else-if="item.type=== 'select'" v-model="ruleForm[item.name]" :placeholder="item.placeholder">
+            <el-option
+                v-for="item in item.option"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+              </el-option>
+            </el-select>
+            <fd-switch :status="ruleForm[item.name]" v-else-if="item.type=== 'switch'"></fd-switch>
+            <el-checkbox-group v-else-if="item.type=== 'checkbox'" v-model="ruleForm[item.name]">
+              <el-checkbox 
+                v-for="(item,key) in item.option" 
+                :key="key" 
+                :label="item.label" 
+                :name="item.value"></el-checkbox>
+            </el-checkbox-group>
+            <el-input v-else-if="item.type === 'textarea' " type="textarea" v-model="ruleForm[item.name]"></el-input>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="submitForm('ruleForm')">立即发布</el-button>
@@ -28,8 +36,13 @@
 </template>
 
 <script>
+import { Switch, Select }  from '@/components/UI/'
 export default {
   name: 'Form',
+    components: {
+      FdSwitch: Switch,
+      FdSelect: Select,
+    },
   props:{
     field: {
         type: Array,
@@ -42,6 +55,12 @@ export default {
           default: function(){
             return []
         },
+    },
+    formlayout: {
+      type: Array,
+          default: function(){
+            return []
+          },
     }
   },
   data () {

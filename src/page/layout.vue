@@ -1,11 +1,12 @@
 <template>
     <div>
       <el-row type="flex" class="top" justify="space-between">
-        <el-col :span="6"><div style="padding-right:10px;">
+        <el-col :span="7"><div style="padding-right:10px;">
           <el-button icon="el-icon-s-home" circle size="mini"></el-button>
             <span style="padding-left:2px">项目实例</span>
-          </div></el-col>
-        <el-col :span="14"  :offset="1"> 
+          </div>
+        </el-col>
+        <el-col :span="13"  :offset="1"> 
             <el-button-group>
                 <el-button  size="mini" @click="showGlobal">全局变量</el-button>
                 <el-button  size="mini" @click="showDic">数据字典</el-button>
@@ -22,48 +23,55 @@
       </el-row>
  
       <el-main>
-        <el-row>
-          <el-col :span="24">
+        <el-row type="flex">
+          <el-col :span="mianSpan">
               <div class="layout">
                 <div>
-                    <span>文章_编辑页（data_dic）</span>
+                    <span>文章_编辑页（{{pageName}}）</span>
                     <span class="mask">组件配置</span>
                 </div>
-                <el-card class="box-card" shadow="never">
-                    
-                    <div slot="header" class="clearfix">
-                        <el-button :icon="activeNames.field" @click="packUp('field')" circle size="mini"></el-button>
-                        <span>字段设置</span>
+                <el-row>
+                    <el-card  v-loading="loading"  element-loading-text="页面配置加载中" class="box-card" shadow="never">
+                        
+                        <div slot="header" class="clearfix">
+                            <el-button :icon="activeNames.field" @click="packUp('field')" circle size="mini"></el-button>
+                            <span>字段设置</span>
+                        </div>
+                        <el-collapse-transition>
+                            <fd-table-edite v-show="activeNames.field == 'el-icon-arrow-down'" :field="field"></fd-table-edite>
+                        </el-collapse-transition>
+                    </el-card>
+                    <el-card  v-loading="loading"  element-loading-text="页面配置加载中" class="box-card" shadow="never">
+                        <div slot="header" class="clearfix">
+                            <el-button :icon="activeNames.row"  @click="packUp('row')" circle size="mini"></el-button>
+                            <span>行数据</span>
+                        </div>
+                        <el-collapse-transition>
+                            <fd-rows :rows="rows" v-show="activeNames.row == 'el-icon-arrow-down'"></fd-rows>
+                        </el-collapse-transition>
+                    </el-card>
+                    <div class="footer">
+                        <el-button type="primary" size="small" @click="sumbit">提交配置</el-button>
                     </div>
-                    <el-collapse-transition>
-                        <fd-table-edite v-show="activeNames.field == 'el-icon-arrow-down'" :field="field"></fd-table-edite>
-                    </el-collapse-transition>
-                </el-card>
-                <el-card class="box-card" shadow="never">
-                    <div slot="header" class="clearfix">
-                        <el-button :icon="activeNames.row"  @click="packUp('row')" circle size="mini"></el-button>
-                        <span>行数据</span>
-                    </div>
-                    <el-collapse-transition>
-                        <fd-rows :rows="rows" v-show="activeNames.row == 'el-icon-arrow-down'"></fd-rows>
-                    </el-collapse-transition>
-                </el-card>
-                <div class="footer">
-                    <el-button type="primary" size="small" @click="sumbit">提交配置</el-button>
-                </div>
+                </el-row>
             </div>
           </el-col>
-          <!-- <el-col :span="1">
-             <div class="toollist">
-                <el-button plain icon="el-icon-s-operation" size="medium"></el-button>
-                <el-button plain icon="el-icon-refresh" size="medium"></el-button>
-                <el-button plain icon="el-icon-view" size="medium"></el-button>
-                <el-button plain icon="el-icon-time" size="medium"></el-button>
-             </div>
-          </el-col> -->
-          <!-- <el-col :span="5">
-              <tools></tools>
-          </el-col> -->
+          <el-col :span="1">
+                <div class="toollist">
+                    <el-tooltip class="item" effect="dark" content="点击收起工具栏" placement="left-start">
+                        <el-button @click="packUpTools" plain icon="el-icon-s-operation" size="medium"></el-button>
+                    </el-tooltip>
+                    <el-tooltip class="item" effect="dark" content="点击刷新页面" placement="left-start">
+                         <el-button plain icon="el-icon-refresh" size="medium"></el-button>
+                    </el-tooltip>
+                    <el-tooltip class="item" effect="dark" content="点击查看当前页面效果" placement="left-start">
+                        <el-button @click="lookView" plain icon="el-icon-view" size="medium"></el-button>
+                    </el-tooltip>
+                </div> 
+          </el-col>
+            <el-col :span="toolSpan" v-show="toolShow">
+                <fd-tools></fd-tools>
+            </el-col>
         </el-row>
       </el-main>
         <fd-dialog 
@@ -74,6 +82,7 @@
             :field="gridField"
             :tableType="tableType"
             :addBotton="addBotton"
+            :fieldName="fieldName"
             @onSubmit="onSubmit"
             @onClose="onClose"
         ></fd-dialog>
@@ -84,13 +93,16 @@
   import search from './search.vue'
   import rows from './rows.vue'
   import dialog from '../components/Common/Dialog'
+  import tools from '../components/Common/Tools'
+  import bus from '@/util/bus'
   export default {
     name: 'layout',
     components: {
         FdTableEdite: tableEdite,
         FdSearch:search,
         FdRows:rows,
-        FdDialog:dialog
+        FdDialog:dialog,
+        FdTools:tools
     },
     provide () {
         return {
@@ -138,19 +150,23 @@
         gridField:[],
         addBotton: true,
         tableType: 'editTable',
-        key:0
+        key:0,
+        fieldName: '',
+        loading: false,
+        pageName: '',
+        mianSpan: 19,
+        toolSpan: 4,
+        toolShow: true,
+        PublicLogData:[]
       };
     },
     async created(){
-
         let vm = this
-
-        let { result: { field = [], rows = [], search = [] } } = await vm.$httpExt.get('http://localhost:3000/dataDictType',{}, {
-            withCredentials:true
-        });
-
-        vm.field = field
-        vm.rows = rows
+        bus.$on('openpage', (data) => {
+            this.loading = true
+            this.pageName = data.label
+            this.getPageConfig(data.id);
+        })
 
         document.onkeydown = function (e) {
             var keyCode = e.keyCode || e.which || e.charCode;
@@ -161,13 +177,50 @@
                 return false;
             }
         };
-            
-    
 
     },
     methods: {
+
+        packUpTools(){
+            this.toolShow = !this.toolShow
+            if(this.toolShow){
+                this.mianSpan = 19
+                this.toolSpan = 4
+            }else{
+                this.mianSpan = 23
+                this.toolSpan = 0
+            }
+        },
+
+        lookView(){
+            this.preview()
+        },
+
+        async getPageConfig(id){
+            let vm = this
+            let { 
+                    result: { 
+                        field = [], 
+                        option = [], 
+                        global = [], 
+                        dic = [], 
+                        rows = [], 
+                        vision = []  
+                    } 
+                } = await vm.$httpExt.get('http://localhost:3000/getPageConfigById',{id:id}, { withCredentials:true});
+
+                vm.field = field
+                vm.rows = rows
+                vm.option = option
+                vm.vision = vision
+                vm.dic = dic
+                vm.global = global
+                vm.loading = false
+
+        },
+
         onSubmit(data){
-            console.log("data", data)
+            this[data.filename] = data.data
             this.dialogTableVisible = false
         },
         onClose(){
@@ -184,7 +237,8 @@
             this.key++
             this.title = '版本控制'
             this.tableType = "table"
-            this.addBotton = false
+            this.addBotton = true
+            this.fieldName = "vision"
             this.gridField = [
                 {
                     prop: 'vision',
@@ -227,31 +281,16 @@
                     }]
                 }
             ]
-            this.gridData =[{
-                vision: '2020.1217.001',
-                env: ['测试环境','正式环境'],
-                publisher: '邓蔚之',
-                datetime: '2020-12-17 17:51:11',
-                desc: '新增菜单管理权限'
-            }]
+            this.gridData = this.vision
             this.dialogTableVisible = true
         },
         showOption(){
             this.key++
             this.title = '配置后端接口'
             this.tableType = "editTable"
+            this.fieldName = "option"
             this.addBotton = true
-            this.gridData =[{
-                field: 'LIST_URL',
-                url: 'http://iscb-backweb-dev.sit.sf-express.com:8080/backweb/dataDictType/list'
-            },{
-                field: 'ADD_URL',
-                url: 'http://iscb-backweb-dev.sit.sf-express.com:8080/backweb/dataDictType/list'
-            },
-            {
-                field: 'UPDATE_URL',
-                url: 'http://iscb-backweb-dev.sit.sf-express.com:8080/backweb/dataDictType/list'
-            }]
+            this.gridData = this.option
             this.gridField = [
                 {
                     prop: 'field',
@@ -271,11 +310,9 @@
             this.key++
             this.title = '配置全局变量'
             this.tableType = "editTable"
+            this.fieldName = "global"
             this.addBotton = true
-            this.gridData =[{
-                field: 'API',
-                value: 'http://iscb-backweb-dev.sit.sf-express.com:8080'
-            }]
+            this.gridData = this.global
             this.gridField = [
                 {
                     prop: 'field',
@@ -295,7 +332,8 @@
             this.key++
             this.title = '全局字典'
             this.tableType = "table"
-            this.addBotton = false
+            this.fieldName = "dic"
+            this.addBotton = true
             this.gridField = [{
                 prop: 'id',
                 label: '字典编号',
@@ -326,11 +364,7 @@
                         }
                     }]
             }]
-            this.gridData = [{
-                id: 1,
-                name: '（勿删）仓租计算周期',
-                type: '键值对'
-            }]
+            this.gridData = this.dic
             this.dialogTableVisible = true
         },
         handleChange(){
@@ -347,6 +381,10 @@
             let data = {}
             data.field = vm.field
             data.rows = vm.rows
+            data.vision = vm.vision
+            data.option = vm.option
+            data.dic = vm.dic
+            data.global = vm.global
             vm.$httpExt.post('http://localhost:3000/',data).then( res => {
                if(res.succ === "ok"){
                    vm.$message({
@@ -403,8 +441,7 @@
     .toollist{
         background-color: #fff;
         text-align: center;
-        height: 100%;
-        
+        height: calc(100% - 58px);
         .el-button{
             border:none;
             margin: 0 auto; 

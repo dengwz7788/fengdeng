@@ -5,7 +5,7 @@
           class="editTable"
           :data="field"
           size="small"
-          row-key="fieldname"
+          row-key="index"
           :cell-style="cellStyle"
           @expand-change="exChange"
           border>
@@ -22,13 +22,13 @@
           <el-table-column label="字段名" width="180" header-align="center">
               <template slot-scope="scope">
                   <div v-if="scope.row.awaitfield" @dblclick="edit(scope.row,'awaitfield')"><i class="el-icon-edit"></i>{{scope.row.fieldname}}</div>
-                  <el-input :ref="'field' + scope.row.fieldname" @blur="edit(scope.row, 'awaitfield')" v-else v-model="scope.row.fieldname" size="small" placeholder="请输入字段"></el-input>
+                  <el-input ref="field" @blur="edit(scope.row, 'awaitfield')" v-else v-model="scope.row.fieldname" size="small" placeholder="请输入字段"></el-input>
               </template>
           </el-table-column>
-          <el-table-column  prop="name" label="中文名" header-align="center">
+          <el-table-column label="中文名" header-align="center">
               <template slot-scope="scope">
                   <div v-if="scope.row.awaitedit" @dblclick="edit(scope.row,'awaitedit')"><i class="el-icon-edit"></i>{{scope.row.name}}</div>
-                  <el-input :ref="'field' + scope.row.field" @blur="edit(scope.row, 'awaitedit')" v-else v-model="scope.row.name" size="small" placeholder="请输入中文名"></el-input>
+                  <el-input ref="field" @blur="edit(scope.row, 'awaitedit')" v-else v-model="scope.row.name" size="small" placeholder="请输入中文名"></el-input>
               </template>
           </el-table-column>
           <el-table-column  prop="type" label="控件类型" header-align="center">
@@ -116,6 +116,7 @@ export default {
       }],
       checkrows: [],
       fieldTpl: {
+        index: 0,
         fieldname: '',
         name: '双击修改',
         optionname: '文本输入框',
@@ -135,6 +136,7 @@ export default {
     }
   },
   async created(){
+
    // this.getFieldByUrl()
   },
   mounted() {
@@ -187,12 +189,8 @@ export default {
     edit(rows, type = "awaitedit"){
       rows[type] = !rows[type]
       this.$nextTick( () =>{
-         this.$refs['field' + rows.field] && this.$refs['field' + rows.field].$refs.input.focus()
+        this.$refs['field'] && this.$refs['field'].$refs.input.focus()
       })
-    },
-
-    edit2(rows){
-       rows.awaitfield = !rows.awaitfield
     },
 
     change(row,e){

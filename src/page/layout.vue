@@ -209,7 +209,10 @@
                     } 
                 } = await vm.$httpExt.get('http://localhost:3000/getPageConfigById',{id:id}, { withCredentials:true});
 
-                vm.field = field
+                vm.field = field.map( (item, index) => {
+                     item.index = index
+                     return item
+                } )
                 vm.rows = rows
                 vm.option = option
                 vm.vision = vision

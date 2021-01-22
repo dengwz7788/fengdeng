@@ -1,5 +1,9 @@
 <template>
   <div class="content">
+
+      <fd-upload></fd-upload>
+
+      <fd-login></fd-login>
      
       <div class="header">
         <el-breadcrumb separator-class="el-icon-arrow-right">
@@ -75,10 +79,14 @@
 
 <script>
 import Search from '@/components/Common/Search.vue'
+import Upload from '@/components/Common/Upload.vue'
+import Login from '@/components/Common/Login.vue'
 export default {
   name: 'PageShow',
   components: {
-     FdSearch: Search
+     FdSearch: Search,
+     FdUpload:Upload,
+     FdLogin: Login
   },
   data () {
     return {

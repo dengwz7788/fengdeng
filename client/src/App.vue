@@ -1,12 +1,22 @@
 <template>
   <div id="app">
+    <van-nav-bar title="标题" left-arrow left-text="返回" safe-area-inset-top></van-nav-bar>
     <router-view/>
   </div>
 </template>
 
 <script>
+import { Toast } from 'vant'
 export default {
-  name: 'App'
+  name: 'App',
+  methods: {
+    onClickLeft () {
+      Toast('返回')
+    },
+    onClickRight () {
+      Toast('按钮')
+    }
+  }
 }
 </script>
 

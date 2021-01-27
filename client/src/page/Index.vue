@@ -1,11 +1,6 @@
 <template>
-  <div class="hello">
-    <van-notice-bar
-      left-icon="volume-o"
-      text="在代码阅读过程中人们说脏话的频率是衡量代码质量的唯一标准。"
-    />
-
-    <van-collapse v-model="activeNames">
+  <div>
+    <van-collapse v-model="activeNames" :border="false">
       <van-collapse-item title="用户信息" name="1">
         <van-cell-group>
           <van-cell title="用户ID" value="12345678" />
@@ -26,7 +21,7 @@
 
 <script>
 export default {
-  name: 'HelloWorld',
+  name: 'Index',
   data () {
     return {
       activeNames: ['1'],
@@ -48,9 +43,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-.hello{
-   height: 100px;
-}
-</style>

@@ -1,11 +1,20 @@
 <template>
   <div class="team">
-    <div v-show="show">
-
+    <div v-if="show">
+      <index />
     </div>
-    <div v-show="!show">
-      <div class="title">数据走势</div>
-      <div id="main"></div>
+    <div v-else>
+
+      <div class="row">
+        <van-tag plain type="primary">标签</van-tag>
+      </div>
+
+      <div class="row">
+          <echart-line :chart="chart"/>
+      </div>
+      <div class="row">
+          <echart-line :chart="chart2"/>
+      </div>
     </div>
 
     <van-tabbar v-model="active">
@@ -15,12 +24,34 @@
   </div>
 </template>
 <script>
-import * as echarts from 'echarts'
+import Index from './Index'
+import EchartLine from '../components/echart/Line'
 export default {
   name: 'Team',
+  components: {
+    Index: Index,
+    EchartLine: EchartLine
+  },
   data () {
     return {
-      active: 0
+      active: 0,
+      chart: {
+        title: '走势图',
+        data: ['01-20', '01-21', '01-22', '01-23', '01-24', '01-25', '01-26'],
+        series: [{
+          data: [120, 222, 123, 222, 102, 234, 111],
+          type: 'line',
+          smooth: true
+        }]
+      },
+      chart2: {
+        title: '柱状图',
+        data: ['是', '否'],
+        series: [{
+          data: [33, 2],
+          type: 'bar'
+        }]
+      }
     }
   },
   computed: {
@@ -29,41 +60,8 @@ export default {
     }
   },
   mounted () {
-    // 基于准备好的dom，初始化echarts实例
-    let chartDom = document.getElementById('main')
-    let myChart = echarts.init(chartDom)
-
-    let option = {
-      xAxis: {
-        type: 'category',
-        data: ['01-20', '01-21', '01-22', '01-23', '01-24', '01-25', '01-26']
-      },
-      yAxis: {
-        type: 'value'
-      },
-      series: [{
-        data: [120, 222, 123, 222, 102, 234, 111],
-        type: 'line',
-        smooth: true
-      }]
-    }
-    myChart.setOption(option)
   },
   methods: {
   }
 }
 </script>
-
-<style scoped>
-  #main{
-      width: calc( 100% - 20px);
-      height: 400px;
-      margin: 0 auto;
-  }
-  .team .title{
-    padding: 10px 0 0  20px;
-    font-size: 14px;
-    color: #999;
-  }
-
-</style>

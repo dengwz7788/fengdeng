@@ -3,7 +3,6 @@
     <el-container style="height:100%">
       <el-header height="40px">
           丰登可视化配置表单系统
-          <div class="userinfo">10401892 <span class="loginout">退出</span></div>     
       </el-header>
       
       <router-view class="routerView" />
